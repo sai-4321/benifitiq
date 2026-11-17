@@ -1,0 +1,7 @@
+# BenefitIQ dependencies - every version pinned so laptop, Docker and CI install identical code.
+# Packages are added ticket by ticket as features need them.
+
+# ---- Dev tooling ----
+pytest==8.4.2
+pytest-asyncio==1.3.0
+ruff==0.14.5

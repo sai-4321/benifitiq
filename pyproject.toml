@@ -1,0 +1,20 @@
+[project]
+name = "benefitiq"
+version = "0.1.0.dev0"
+description = "Health Plan Benefits & Policy Assistant - RAG + LangGraph + MCP on Claude (Amazon Bedrock)"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["B008"]
