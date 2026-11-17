@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Generated data (re-created by the scripts)
+data/raw/*
+data/synthetic/*
+data/chroma/*
+data/cache/*
+!data/**/.gitkeep
+
+# Eval outputs
+evals/results/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
