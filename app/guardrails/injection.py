@@ -37,7 +37,10 @@ RULES: list[tuple[str, re.Pattern]] = [
         r"\b(list|dump|export|show|give me|print)\b.{0,25}\b(all|every|entire)\b.{0,25}"
         r"\b(members?|patients?|ssns?|social security|records|database|table)\b", re.I)),
     ("sql_or_code", re.compile(
-        r"(\bselect\b.+\bfrom\b|\bdrop\s+table\b|\bunion\s+select\b|<script\b|\bos\.system\b|\bexec\()", re.I)),
+        # SQL shape, not English: "select * from x" / "select a, b from x" - but not
+        # "select the best plan from the list".
+        r"(\bselect\s+(\*|\w+(\s*,\s*\w+)*)\s+from\s+\w+|\bdrop\s+table\b|\bunion\s+select\b"
+        r"|<script\b|\bos\.system\b|\bexec\()", re.I)),
     ("fake_system_tag", re.compile(r"(\[/?system\]|<\|?system\|?>|^\s*system\s*:|BEGIN SYSTEM PROMPT)", re.I | re.M)),
 ]
 
