@@ -34,3 +34,17 @@ python scripts/check_bedrock.py
 ```
 
 Tests never call AWS: they stub Bedrock with botocore's `Stubber`.
+
+## Guardrails: PII/PHI masking
+
+Before any text reaches Claude, logs or the cache, `app/guardrails/pii.py` swaps identifiers for placeholders:
+
+```
+Patient John Smith (M1003), SSN 123-45-6789, call 469-555-0134
+-> Patient [NAME_1] ([MEMBER_ID_1]), SSN [SSN_1], call [PHONE_1]
+```
+
+Detected: SSN, Medicare Beneficiary Identifier (MBI), email, phone, date of birth, member ID, and names after
+cue words (patient, member, named, Dr., Mr./Mrs./Ms.). The placeholder map never leaves the API process, so the
+answer can be un-masked only for the authorized user. Production upgrade: Amazon Comprehend Medical `DetectPHI`
+or Amazon Bedrock Guardrails sensitive-information filters.
