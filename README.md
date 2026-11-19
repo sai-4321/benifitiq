@@ -128,3 +128,12 @@ uvicorn app.api.main:app --reload --port 8000      # docs: http://localhost:8000
 | POST | `/approve` | supervisor approves/rejects a pending answer by `thread_id` |
 | GET | `/pending` | answers waiting for review (masked questions only) |
 | GET | `/metrics` | requests, cache hits, blocks, approvals, latency, tokens, cost |
+
+## UI
+
+```powershell
+streamlit run ui/streamlit_app.py     # http://localhost:8501 (needs the API running)
+```
+
+Chat with demo questions, answer + confidence + citations, a "what the LLM saw" panel showing the masked question
+and retrieved chunks, and a supervisor approve/reject panel for answers that need human review.
