@@ -1,6 +1,6 @@
 [project]
 name = "benefitiq"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Health Plan Benefits & Policy Assistant - RAG + LangGraph + MCP on Claude (Amazon Bedrock)"
 requires-python = ">=3.12"
 
