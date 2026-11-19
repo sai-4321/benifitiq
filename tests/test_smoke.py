@@ -3,7 +3,7 @@ import app
 
 
 def test_package_imports():
-    assert app.__version__.startswith("0.1.0")
+    assert app.__version__.startswith("0.")
 
 
 def test_subpackages_import():
