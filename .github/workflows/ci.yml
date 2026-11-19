@@ -33,3 +33,18 @@ jobs:
         with:
           name: pytest-report
           path: pytest-report.xml
+
+  docker-build:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t benefitiq:ci .
+
+      - name: Smoke test - container starts and /health answers
+        run: |
+          docker run -d --name bq -p 8000:8000 -e EMBEDDING_PROVIDER=fake -e AWS_REGION=us-east-1 benefitiq:ci
+          for i in $(seq 1 20); do curl -fs http://localhost:8000/health && exit 0; sleep 2; done
+          docker logs bq; exit 1
