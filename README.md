@@ -73,3 +73,21 @@ Each question runs two searches and fuses them with Reciprocal Rank Fusion (`sco
 vector search (Titan embeddings in ChromaDB) finds meaning ("mobility aid" -> walkers), BM25 finds exact terms
 ("Part B", "63 days"). If the embedding call fails, keyword results still come back.
 Production mapping: Amazon OpenSearch Serverless hybrid query, or Bedrock Knowledge Bases.
+
+## Member tools (MCP)
+
+Member and plan facts come from an **MCP server** (`app/mcp_server/server.py`), not from free-form SQL. It exposes
+three typed, read-only tools over the synthetic database:
+
+| Tool | Input (validated before running) | Returns |
+|---|---|---|
+| `get_member_plan` | `member_id` matching `^M\d{4}$` | plan ID/name/type, coverage start, status - no names, DOB or phone |
+| `get_plan_benefits` | `plan_id` matching `^PLN-\d{3}$` | deductible, copays, OOP max, coinsurance, referral rule |
+| `check_prior_auth` | `plan_id` + `service` from a fixed list | whether prior authorization is required, with notes |
+
+Try it in any MCP client (e.g. Claude Desktop `claude_desktop_config.json`):
+
+```json
+{"mcpServers": {"benefitiq": {"command": "python", "args": ["-m", "app.mcp_server.server"],
+  "cwd": "C:/path/to/benifitiq"}}}
+```
