@@ -11,6 +11,9 @@ boto3==1.40.70
 langchain-core==1.0.7
 langchain-aws==1.0.0
 
+# ---- RAG ----
+langchain-text-splitters==1.0.0
+
 # ---- Data ----
 requests==2.32.5
 pypdf==6.1.3
