@@ -17,6 +17,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from langsmith import traceable
+
+from app.core.tracing import redact_inputs
+
 # Order matters: more specific patterns first (SSN before phone, MBI before member ID).
 PATTERNS: list[tuple[str, re.Pattern]] = [
     ("SSN", re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
@@ -48,6 +52,7 @@ class MaskResult:
     counts: dict[str, int] = field(default_factory=dict)  # entity type -> how many
 
 
+@traceable(name="mask_pii", run_type="tool", process_inputs=redact_inputs)
 def mask_pii(text: str) -> MaskResult:
     """Replace PII with numbered placeholders. Same value -> same placeholder."""
     mapping: dict[str, str] = {}

@@ -16,7 +16,10 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from langsmith import traceable
+
 from app.core.logging_config import get_logger
+from app.core.tracing import redact_inputs
 
 log = get_logger(__name__)
 
@@ -54,6 +57,7 @@ class InjectionResult:
     reasons: list[str] = field(default_factory=list)
 
 
+@traceable(name="check_injection", run_type="tool", process_inputs=redact_inputs)
 def check_injection(text: str, classifier: Classifier | None = None) -> InjectionResult:
     """Block if any rule matches; otherwise ask the optional classifier."""
     reasons = [name for name, pattern in RULES if pattern.search(text)]

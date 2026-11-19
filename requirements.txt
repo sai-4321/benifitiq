@@ -11,6 +11,11 @@ boto3==1.40.70
 langchain-core==1.0.7
 langchain-aws==1.0.0
 
+# ---- Reliability, caching, tracing ----
+tenacity==9.1.2
+diskcache==5.6.3
+langsmith==0.4.60
+
 # ---- RAG ----
 langchain-text-splitters==1.0.0
 chromadb==1.0.21
