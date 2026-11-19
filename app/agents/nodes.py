@@ -109,8 +109,11 @@ def _format_member_data(state: AgentState) -> str:
     results = state.get("tool_results")
     if not results:
         return "(no member data requested)"
+    # Tool results echo the raw member ID back. Strip it here, at the prompt boundary, so tool data
+    # can never undo the PII masking (the question already refers to the member as [MEMBER_ID_n]).
+    member = {k: v for k, v in (results.get("member") or {}).items() if k != "member_id"}
     view = {
-        "TOOL:get_member_plan": results.get("member"),
+        "TOOL:get_member_plan": member,
         "TOOL:get_plan_benefits": results.get("benefits"),
     }
     if results.get("prior_auth"):
