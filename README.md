@@ -48,3 +48,16 @@ Detected: SSN, Medicare Beneficiary Identifier (MBI), email, phone, date of birt
 cue words (patient, member, named, Dr., Mr./Mrs./Ms.). The placeholder map never leaves the API process, so the
 answer can be un-masked only for the authorized user. Production upgrade: Amazon Comprehend Medical `DetectPHI`
 or Amazon Bedrock Guardrails sensitive-information filters.
+
+## Guardrails: prompt injection
+
+`app/guardrails/injection.py` checks every (masked) question before any LLM call:
+
+1. **Rules** (always on, ~0 ms): named regex rules for instruction override, system-prompt leaks, role hijack,
+   jailbreak keywords, bulk data exfiltration ("list all members' SSNs"), SQL/code and fake system tags.
+2. **Classifier** (optional): a pluggable `(text) -> (is_injection, reason)` hook for attacks the rules miss.
+   If it errors, the rules-only result stands - the guard never crashes a request.
+
+Blocks are explainable (rule names are returned and logged; the attack text never is). The test suite checks
+both directions: every attack is blocked, and look-alike normal questions ("Can a plan ignore a prior
+authorization request?") are not.
