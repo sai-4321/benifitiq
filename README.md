@@ -61,3 +61,15 @@ or Amazon Bedrock Guardrails sensitive-information filters.
 Blocks are explainable (rule names are returned and logged; the attack text never is). The test suite checks
 both directions: every attack is blocked, and look-alike normal questions ("Can a plan ignore a prior
 authorization request?") are not.
+
+## Retrieval (hybrid RAG)
+
+```powershell
+python scripts/download_docs.py   # 4 public Medicare.gov PDFs -> data/raw/
+python scripts/ingest.py          # pages -> 800/120 chunks -> Titan embeddings -> ChromaDB + chunks.jsonl
+```
+
+Each question runs two searches and fuses them with Reciprocal Rank Fusion (`score = sum 1/(60 + rank)`):
+vector search (Titan embeddings in ChromaDB) finds meaning ("mobility aid" -> walkers), BM25 finds exact terms
+("Part B", "63 days"). If the embedding call fails, keyword results still come back.
+Production mapping: Amazon OpenSearch Serverless hybrid query, or Bedrock Knowledge Bases.
