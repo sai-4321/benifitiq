@@ -5,6 +5,15 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-19 - Sprint 3: Ship it
+
+### Added
+- FastAPI service: `/health`, `/ask`, `/approve`, `/pending`, `/metrics`, generic 500 handler (BIQ-13, #31)
+- Streamlit UI with citations, masked-prompt view, supervisor approval and live metrics (BIQ-14, #32)
+- Evaluation harness: 44-question golden set; retrieval, answer, groundedness and system metrics (BIQ-15, #33)
+- Docker image (non-root, healthcheck), docker-compose for API + UI, CI image build with smoke test,
+  full README and AWS setup guide (BIQ-16, #34)
+
 ## [0.2.0] - 2026-11-19 - Sprint 2: Core AI
 
 ### Added
@@ -38,6 +47,7 @@ versions follow [Semantic Versioning](https://semver.org/).
 ### Fixed
 - SQL injection rule no longer blocks plain English such as "select the best plan from the list" (#21)
 
-[Unreleased]: https://github.com/sai-4321/benifitiq/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/sai-4321/benifitiq/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/sai-4321/benifitiq/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/sai-4321/benifitiq/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sai-4321/benifitiq/releases/tag/v0.1.0
