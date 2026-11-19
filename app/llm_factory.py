@@ -10,9 +10,13 @@ AWS_BEARER_TOKEN_BEDROCK (Bedrock API key) -> AWS_ACCESS_KEY_ID/SECRET -> AWS_PR
 """
 from __future__ import annotations
 
+import hashlib
+import math
 import os
+import re
 from functools import lru_cache
 
+from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.config import get_settings
@@ -96,6 +100,47 @@ def active_provider_label() -> str:
     if s.fallback_enabled:
         label += f" (fallback: {s.bedrock_fallback_model_id})"
     return label
+
+
+# ---------------------------------------------------------------- embeddings
+class HashEmbeddings(Embeddings):
+    """Offline, free, deterministic embeddings (feature hashing of words).
+
+    NOT semantic - only used for unit tests, CI, and a no-key smoke test.
+    """
+
+    def __init__(self, dim: int = 384):
+        self.dim = dim
+
+    def _embed(self, text: str) -> list[float]:
+        vec = [0.0] * self.dim
+        for tok in re.findall(r"[a-z0-9]+", text.lower()):
+            h = int(hashlib.md5(tok.encode()).hexdigest(), 16)
+            vec[h % self.dim] += 1.0 if (h >> 8) % 2 == 0 else -1.0
+        norm = math.sqrt(sum(v * v for v in vec)) or 1.0
+        return [v / norm for v in vec]
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [self._embed(t) for t in texts]
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed(text)
+
+
+@lru_cache(maxsize=1)
+def get_embeddings() -> Embeddings:
+    s = get_settings()
+    if s.embedding_provider == "fake":
+        return HashEmbeddings()
+    from langchain_aws import BedrockEmbeddings
+
+    return BedrockEmbeddings(
+        model_id=s.bedrock_embed_model_id,
+        # normalize=True -> unit-length vectors, so cosine similarity in Chroma behaves well.
+        normalize=True,
+        model_kwargs={"dimensions": s.bedrock_embed_dimensions},
+        **_common_kwargs(),
+    )
 
 
 def extract_text(message) -> str:
