@@ -13,6 +13,7 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from langsmith import traceable
 from rank_bm25 import BM25Okapi
 
 from app.config import get_settings
@@ -79,6 +80,7 @@ class HybridRetriever:
             log.warning("Vector search failed, using keyword-only results: %s", exc)
             return []
 
+    @traceable(name="hybrid_retrieve", run_type="retriever")
     def retrieve(self, query: str, top_k: int = 5) -> list[dict]:
         fused = rrf_fuse(
             {"vector": self.vector_search(query, self.candidates), "bm25": self.bm25_search(query, self.candidates)}
