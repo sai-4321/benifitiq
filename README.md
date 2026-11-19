@@ -137,3 +137,24 @@ streamlit run ui/streamlit_app.py     # http://localhost:8501 (needs the API run
 
 Chat with demo questions, answer + confidence + citations, a "what the LLM saw" panel showing the masked question
 and retrieved chunks, and a supervisor approve/reject panel for answers that need human review.
+
+## Evaluation
+
+```powershell
+python evals/run_eval.py              # 44 questions, with Claude-as-judge groundedness
+python evals/run_eval.py --no-judge   # cheaper/faster
+python evals/run_eval.py --pause 5    # if Bedrock throttles a new account
+```
+
+| Metric | What it measures |
+|---|---|
+| route accuracy | router picked policy / member / both / out_of_scope as expected |
+| injection block rate | attack prompts in the golden set were blocked |
+| doc hit@k, evidence hit@k, MRR | retrieval: right document in top-k; first chunk containing the expected fact, and its rank |
+| keyword recall | answer contains the expected facts (with alternatives, e.g. `doesn't cover\|does not cover`) |
+| citation accuracy | citations point at retrieved chunks and their quotes really appear there |
+| groundedness | Claude-as-judge: share of answer claims supported by the retrieved context |
+| latency p50/p95, tokens, cost | from Bedrock usage metadata |
+
+Results are written to `evals/results/` (git-ignored) as a per-question CSV and a summary JSON. The numbers
+depend on your AWS run, so record them from your own `summary_*.json`.
