@@ -38,6 +38,7 @@ PATTERNS: list[tuple[str, re.Pattern]] = [
     ),
 ]
 
+MEMBER_ID_RE = re.compile(r"\bM\d{4}\b")
 
 
 @dataclass
@@ -76,3 +77,7 @@ def unmask(text: str, mapping: dict[str, str]) -> str:
         text = text.replace(placeholder, value)
     return text
 
+
+def extract_member_id(text: str) -> str | None:
+    m = MEMBER_ID_RE.search(text)
+    return m.group(0) if m else None
