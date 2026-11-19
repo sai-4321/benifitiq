@@ -114,3 +114,17 @@ Try it in any MCP client (e.g. Claude Desktop `claude_desktop_config.json`):
 
 `app/pipeline.py` runs the whole request: **mask PII -> injection guard -> cache -> graph -> unmask**. Masking is
 first, so nothing downstream (classifier, Claude, cache, logs, traces) ever sees raw identifiers.
+
+## API
+
+```powershell
+uvicorn app.api.main:app --reload --port 8000      # docs: http://localhost:8000/docs
+```
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health` | ready? (indexed chunks, member DB, model) |
+| POST | `/ask` | `{"question": "...", "member_id": "M1002"}` -> `completed`, `blocked` or `pending_approval` |
+| POST | `/approve` | supervisor approves/rejects a pending answer by `thread_id` |
+| GET | `/pending` | answers waiting for review (masked questions only) |
+| GET | `/metrics` | requests, cache hits, blocks, approvals, latency, tokens, cost |
