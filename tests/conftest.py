@@ -79,3 +79,10 @@ def retriever(settings, sample_chunks):
         for c in sample_chunks:
             f.write(json.dumps(c) + "\n")
     return HybridRetriever(sample_chunks, store)
+
+
+def make_llm(*json_replies: dict | str):
+    """Fake chat model that returns the given replies in order (dicts are JSON-encoded)."""
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+    return FakeListChatModel(responses=[r if isinstance(r, str) else json.dumps(r) for r in json_replies])
