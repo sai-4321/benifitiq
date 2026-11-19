@@ -13,6 +13,8 @@ langchain-aws==1.0.0
 
 # ---- RAG ----
 langchain-text-splitters==1.0.0
+chromadb==1.0.21
+rank-bm25==0.2.2
 
 # ---- Data ----
 requests==2.32.5
