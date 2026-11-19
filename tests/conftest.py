@@ -86,3 +86,25 @@ def make_llm(*json_replies: dict | str):
     from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
     return FakeListChatModel(responses=[r if isinstance(r, str) else json.dumps(r) for r in json_replies])
+
+
+@pytest.fixture
+def wire_graph(monkeypatch, retriever, member_db):
+    """Point the agents at a scripted fake LLM + the test retriever. Returns set_replies(*replies)."""
+    import app.agents.nodes as nodes
+    from app import pipeline
+    from app.agents.graph import get_graph
+    from app.core.cache import get_cache
+
+    get_graph.cache_clear()
+    get_cache.cache_clear()
+    get_cache().clear()
+    pipeline.PENDING.clear()
+    monkeypatch.setattr(nodes, "get_retriever", lambda: retriever)
+
+    def set_replies(*replies):
+        llm = make_llm(*replies)
+        monkeypatch.setattr(nodes, "get_llm", lambda: llm)
+        return llm
+
+    return set_replies

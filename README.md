@@ -91,3 +91,26 @@ Try it in any MCP client (e.g. Claude Desktop `claude_desktop_config.json`):
 {"mcpServers": {"benefitiq": {"command": "python", "args": ["-m", "app.mcp_server.server"],
   "cwd": "C:/path/to/benifitiq"}}}
 ```
+
+## Agents (LangGraph)
+
+```
+            START
+              |
+           router ------------------------------------------------+
+   policy /   | member          \ both                             | out_of_scope
+          v   v                  v                                 v
+    retriever  lookup (MCP) <--- retriever, then lookup          refuse -> END
+          \      |
+           v     v
+          summarizer (JSON + citations) -> human_review (pause if needed) -> END
+```
+
+- **router** - Claude classifies intent and service; keyword heuristic if Claude fails.
+- **retriever** - hybrid search; **lookup** - MCP member tools; **summarizer** - validated JSON with citations,
+  invented citations dropped, uncited answers capped at 0.3 confidence.
+- **human_review** - LangGraph `interrupt()` pauses member-specific, low-confidence or flagged answers until a
+  supervisor approves or rejects (resume by `thread_id` from the checkpointer).
+
+`app/pipeline.py` runs the whole request: **mask PII -> injection guard -> cache -> graph -> unmask**. Masking is
+first, so nothing downstream (classifier, Claude, cache, logs, traces) ever sees raw identifiers.
