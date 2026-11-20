@@ -21,6 +21,9 @@ from app.core.logging_config import setup_logging  # noqa: E402
 from app.llm_factory import build_chat_model, extract_text, get_embeddings  # noqa: E402
 
 HINTS = {
+    "not available for this account": "AWS restricts this newer model on your account. Set BEDROCK_CHAT_MODEL_ID to "
+                                      "an older Claude that works in the playground (see docs/AWS_SETUP.md).",
+    "ListServiceSpecificCredentials": "This IAM user can't create API keys. Sign in as root to generate the key.",
     "use case details": "Submit Anthropic's one-time use-case form (Bedrock console -> Model catalog -> Claude).",
     "on-demand throughput": "Use the inference profile ID with the 'us.' prefix in BEDROCK_CHAT_MODEL_ID.",
     "not authorized": "Your key/user needs the AmazonBedrockLimitedAccess policy.",
