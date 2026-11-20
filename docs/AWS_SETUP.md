@@ -21,8 +21,12 @@
 
 *Option A - Bedrock API key (easiest, recommended for this project)*
 1. Bedrock console → left menu **API keys** → **Long-term API keys** tab → **Generate long-term API keys**.
-2. Expiry: **30 days** (renew when it expires). Click **Generate** and **copy the key now**. It starts with `bedrock-api-key-` and is shown only once. AWS automatically creates a small IAM user for it with the **AmazonBedrockLimitedAccess** policy.
-3. Paste it into `.env` as `AWS_BEARER_TOKEN_BEDROCK=...`. (Or set it for your whole Windows user: `setx AWS_BEARER_TOKEN_BEDROCK "bedrock-api-key-..."` and open a new terminal.)
+2. Expiry: **30 days** (renew when it expires). Click **Generate** and **copy the key now** - it is shown only once. AWS automatically creates a small IAM user for it (named like `BedrockAPIKey-xxxx`) with the **AmazonBedrockLimitedAccess** policy.
+   - The **secret** is the long value (~132 characters) starting with **`ABSK`**. That is what goes in `.env`.
+   - The short readable `BedrockAPIKey-xxxx` text is only the key's **name** - it will not work as a key.
+   - (Short-term keys, valid up to 12 hours, start with `bedrock-api-key-` instead.)
+   - If you're signed in as an **IAM user** and see `not authorized to perform: iam:ListServiceSpecificCredentials`, that user can't create keys. Sign in as the **root user** (the account's email) to generate the key, or have root attach `IAMFullAccess` to your IAM user first.
+3. Paste it into `.env` as `AWS_BEARER_TOKEN_BEDROCK=...`. (Or set it for your whole Windows user: `setx AWS_BEARER_TOKEN_BEDROCK "ABSK..."` and open a new terminal.)
 4. AWS recommends long-term keys for learning only. In production you use IAM roles or short-term (12-hour) keys. Say this in interviews.
 
 *Option B - IAM user + AWS CLI (the classic way)*
@@ -34,9 +38,28 @@
 ```powershell
 python -c "import boto3; r=boto3.client('bedrock-runtime',region_name='us-east-1').converse(modelId='us.anthropic.claude-sonnet-5',messages=[{'role':'user','content':[{'text':'Say hi in 3 words'}]}]); print(r['output']['message']['content'][-1]['text'])"
 ```
-(Run it after `pip install -r requirements.txt`. With Option A, set the key first in the same terminal: `$env:AWS_BEARER_TOKEN_BEDROCK="bedrock-api-key-..."`.)
+(Run it after `pip install -r requirements.txt`. With Option A, set the key first in the same terminal: `$env:AWS_BEARER_TOKEN_BEDROCK="ABSK..."`.)
 
 **Cost (on-demand, us-east-1):** Claude Sonnet 5 about **$2 per 1M input tokens / $10 per 1M output tokens**, Claude Haiku 4.5 about **$1 / $5**, Titan Embeddings V2 about **$0.02 per 1M tokens**. Embedding all four booklets costs about one cent. One question costs roughly half a cent, and a full 44-question eval with the judge costs well under $1. The cache makes repeat questions $0. Check https://aws.amazon.com/bedrock/pricing/ for current prices.
+
+## If a Claude model says "not available for this account"
+
+```
+AccessDeniedException: anthropic.claude-sonnet-5 is not available for this account.
+```
+
+AWS limits the **newest** Claude models (e.g. Sonnet 5, Opus 4.8, Opus 5) on some accounts even after the use-case
+form is approved, while older Claude models work. This is an account restriction, not a code problem:
+
+1. In the playground, find a Claude model that answers (e.g. **Claude Sonnet 4.5**, **Claude Haiku 4.5**).
+2. Point BenefitIQ at it in `.env` - no code changes needed:
+   ```
+   BEDROCK_CHAT_MODEL_ID=us.anthropic.claude-sonnet-4-5-20250929-v1:0
+   BEDROCK_FALLBACK_MODEL_ID=us.anthropic.claude-haiku-4-5-20251001-v1:0
+   ```
+   (Bedrock console -> **Cross-region inference** lists the exact `us.` profile ID for every model.)
+3. Optional: ask AWS to enable the newer model - **Support -> Create case -> Account and billing** (free), quoting
+   the model ID and the exact error.
 
 ## 6. LangSmith tracing (optional, free Developer plan)
 

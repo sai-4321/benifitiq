@@ -149,3 +149,18 @@ def test_fake_embeddings_are_deterministic_and_unit_length(monkeypatch):
     assert a == b and len(a) == 384
     assert abs(sum(v * v for v in a) - 1.0) < 1e-9
     assert emb.embed_documents(["x", "y"])[0] != emb.embed_documents(["x", "y"])[1]
+
+
+def test_check_script_gives_actionable_hints():
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parent.parent / "scripts" / "check_bedrock.py"
+    spec = importlib.util.spec_from_file_location("check_bedrock", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    restricted = Exception("AccessDeniedException: anthropic.claude-sonnet-5 is not available for this account.")
+    assert "BEDROCK_CHAT_MODEL_ID" in mod.hint_for(restricted)
+    no_iam = Exception("not authorized to perform: iam:ListServiceSpecificCredentials")
+    assert "root" in mod.hint_for(no_iam)
+    assert "use-case form" in mod.hint_for(Exception("Model use case details have not been submitted"))
