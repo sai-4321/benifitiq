@@ -1,0 +1,202 @@
+{
+ "resourceType": "Bundle",
+ "type": "searchset",
+ "total": 4,
+ "link": [
+  {
+   "relation": "self",
+   "url": "https://sandbox.bluebutton.cms.gov/v2/fhir/ExplanationOfBenefit/?patient=-10000000000001&startIndex=2"
+  }
+ ],
+ "entry": [
+  {
+   "resource": {
+    "resourceType": "ExplanationOfBenefit",
+    "id": "carrier--3",
+    "status": "active",
+    "type": {
+     "coding": [
+      {
+       "system": "https://bluebutton.cms.gov/resources/codesystem/eob-type",
+       "code": "CARRIER"
+      },
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+       "code": "professional"
+      }
+     ]
+    },
+    "patient": {
+     "reference": "Patient/-10000000000001"
+    },
+    "billablePeriod": {
+     "start": "2026-06-20",
+     "end": "2026-06-20"
+    },
+    "provider": {
+     "identifier": {
+      "system": "http://hl7.org/fhir/sid/us-npi",
+      "value": "9999999999"
+     }
+    },
+    "diagnosis": [
+     {
+      "sequence": 1,
+      "diagnosisCodeableConcept": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/sid/icd-10-cm",
+         "code": "Z1231",
+         "display": "Encounter for screening mammogram"
+        }
+       ]
+      }
+     }
+    ],
+    "total": [
+     {
+      "amount": {
+       "value": 123.45,
+       "currency": "USD"
+      }
+     }
+    ],
+    "item": [
+     {
+      "sequence": 1,
+      "productOrService": {
+       "coding": [
+        {
+         "system": "https://bluebutton.cms.gov/resources/codesystem/hcpcs",
+         "code": "99213",
+         "display": "Office or other outpatient visit for the evaluation and management of an established patient"
+        }
+       ]
+      },
+      "adjudication": [
+       {
+        "amount": {
+         "value": 80.0,
+         "currency": "USD"
+        }
+       }
+      ],
+      "servicedPeriod": {
+       "start": "2026-06-20",
+       "end": "2026-06-20"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "resource": {
+    "resourceType": "ExplanationOfBenefit",
+    "id": "carrier--4",
+    "status": "active",
+    "type": {
+     "coding": [
+      {
+       "system": "https://bluebutton.cms.gov/resources/codesystem/eob-type",
+       "code": "CARRIER"
+      },
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+       "code": "professional"
+      }
+     ]
+    },
+    "patient": {
+     "reference": "Patient/-10000000000001"
+    },
+    "billablePeriod": {
+     "start": "2023-02-01",
+     "end": "2023-02-01"
+    },
+    "provider": {
+     "identifier": {
+      "system": "http://hl7.org/fhir/sid/us-npi",
+      "value": "9999999999"
+     }
+    },
+    "diagnosis": [
+     {
+      "sequence": 1,
+      "diagnosisCodeableConcept": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/sid/icd-10-cm",
+         "code": "Z1231",
+         "display": "Encounter for screening mammogram"
+        }
+       ]
+      }
+     }
+    ],
+    "total": [
+     {
+      "amount": {
+       "value": 123.45,
+       "currency": "USD"
+      }
+     }
+    ],
+    "item": [
+     {
+      "sequence": 1,
+      "productOrService": {
+       "coding": [
+        {
+         "system": "https://bluebutton.cms.gov/resources/codesystem/hcpcs",
+         "code": "77067",
+         "display": "Screening mammography, bilateral"
+        }
+       ]
+      },
+      "adjudication": [
+       {
+        "amount": {
+         "value": 80.0,
+         "currency": "USD"
+        }
+       }
+      ],
+      "servicedPeriod": {
+       "start": "2023-02-01",
+       "end": "2023-02-01"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "resource": {
+    "resourceType": "ExplanationOfBenefit",
+    "id": "pde--5",
+    "type": {
+     "coding": [
+      {
+       "system": "https://bluebutton.cms.gov/resources/codesystem/eob-type",
+       "code": "PDE"
+      }
+     ]
+    },
+    "item": [
+     {
+      "sequence": 1,
+      "servicedDate": "2026-05-05",
+      "productOrService": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/sid/ndc",
+         "code": "00093721401",
+         "display": "Metformin HCl 500 mg tablet"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ]
+}
