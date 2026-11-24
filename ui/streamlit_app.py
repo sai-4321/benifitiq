@@ -19,6 +19,7 @@ SAMPLES = [
     ("What is the specialist copay for member M1001?", "M1001"),
     ("Does member M1002 need prior authorization for an MRI?", "M1002"),
     ("Member M1003 needs a walker. Does Medicare cover it and does their plan need prior auth?", "M1003"),
+    ("Has member M1001 had a mammogram in the last year?", "M1001"),
 ]
 
 st.set_page_config(page_title="BenefitIQ", page_icon="🩺", layout="wide")

@@ -183,6 +183,22 @@ Try it in any MCP client (e.g. Claude Desktop `claude_desktop_config.json`):
 `app/pipeline.py` runs the whole request: **mask PII -> injection guard -> cache -> graph -> unmask**. Masking is
 first, so nothing downstream (classifier, Claude, cache, logs, traces) ever sees raw identifiers.
 
+## Medicare claims history (CMS Blue Button 2.0)
+
+Optional: connect a member to a **synthetic** Medicare enrollee in the CMS Blue Button 2.0 sandbox
+(OAuth 2.0 + PKCE consent), then ask history questions:
+
+```
+python scripts/connect_bluebutton.py --member M1001     # log in as a synthetic user, e.g. BBUser00000
+```
+> "Has member M1001 had a mammogram in the last year?"
+
+The router sends member history questions to the lookup agent, which calls the `get_claims_summary` MCP tool
+(FHIR `ExplanationOfBenefit`, paginated) and gets back only dates, claim types, codes and descriptions. The answer
+combines claims ("last screening mammogram 2026-03-14") with policy ("Part B covers one every 12 months"), cites
+both, and goes to human review. Members who haven't connected get a clear "claims unavailable" note instead of an
+error. Setup: [docs/BLUE_BUTTON_SETUP.md](docs/BLUE_BUTTON_SETUP.md).
+
 ## API
 
 ```powershell
