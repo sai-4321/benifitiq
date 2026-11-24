@@ -5,6 +5,26 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-24 - Sprint 4: Medicare claims
+
+### Added
+- CMS Blue Button 2.0 sandbox OAuth client (authorization code + PKCE, state checks, per-member token store,
+  refresh) and `scripts/connect_bluebutton.py`; `docs/BLUE_BUTTON_SETUP.md` (BIQ-17, #45)
+- FHIR ExplanationOfBenefit client and `get_claims_summary` MCP tool with minimum-necessary claim lines
+  (BIQ-18, #46)
+- Agents answer member claims-history questions ("Has M1001 had a mammogram in the last year?") from claims plus
+  policy, with citations and human review (BIQ-19, #47)
+- Python 3.12 dev container for GitHub Codespaces (#38); MIT license (#37)
+- First live evaluation results on Bedrock recorded in the README (#40)
+
+### Changed
+- Summarizer prompt v1.1 (cache key bumped)
+
+### Fixed
+- Bedrock setup docs: long-term API key format and "not available for this account" troubleshooting (#36)
+- Renamed Medicare.gov DME booklet URL (#39)
+- Streamlit sidebar no longer dumps widget help text (#41)
+
 ## [1.0.0] - 2026-11-19 - Sprint 3: Ship it
 
 ### Added
@@ -47,7 +67,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 ### Fixed
 - SQL injection rule no longer blocks plain English such as "select the best plan from the list" (#21)
 
-[Unreleased]: https://github.com/sai-4321/benifitiq/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/sai-4321/benifitiq/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/sai-4321/benifitiq/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sai-4321/benifitiq/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/sai-4321/benifitiq/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sai-4321/benifitiq/releases/tag/v0.1.0
