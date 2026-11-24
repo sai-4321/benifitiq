@@ -13,6 +13,7 @@ data/raw/*
 data/synthetic/*
 data/chroma/*
 data/cache/*
+data/bluebutton/*
 !data/**/.gitkeep
 
 # Eval outputs
