@@ -39,8 +39,10 @@ SOURCES: tuple[SourceDoc, ...] = (
     SourceDoc("11109-your-guide-to-medicare-prescription-drug-coverage.pdf",
               "Your Guide to Medicare Prescription Drug Coverage",
               "https://www.medicare.gov/publications/11109-your-guide-to-medicare-prescription-drug-coverage.pdf"),
+    # Medicare.gov renamed this file (old URL now 404s). The local file name stays the same so chunk ids,
+    # citations and the eval golden set don't change.
     SourceDoc("11045-medicare-coverage-of-dme.pdf", "Medicare Coverage of Durable Medical Equipment & Other Devices",
-              "https://www.medicare.gov/publications/11045-medicare-coverage-of-dme.pdf"),
+              "https://www.medicare.gov/publications/11045-medicare-coverage-of-dme-and-other-devices.pdf"),
 )
 
 
