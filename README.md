@@ -226,6 +226,32 @@ python evals/run_eval.py --pause 5    # if Bedrock throttles a new account
 Results are written to `evals/results/` (git-ignored) as a per-question CSV and a summary JSON. The numbers
 depend on your AWS run, so record them from your own `summary_*.json`.
 
+### Latest results (2026-11-24)
+
+Live run on Amazon Bedrock, us-east-1: Claude Sonnet 4.5 (fallback Claude Haiku 4.5), Titan Text Embeddings V2,
+top-k 5, Claude-as-judge on. 44 questions, 0 errors.
+
+| Metric | Result |
+|---|---|
+| Route accuracy | **100%** (44/44) |
+| Injection block rate | **100%** (3/3 attacks blocked before any LLM call) |
+| Doc hit@5 | **100%** |
+| Evidence hit@5 / MRR | **93.9%** / **0.874** |
+| Keyword recall | **96.2%** |
+| Citation accuracy | **100%** |
+| Groundedness (LLM judge) | **96.4%** |
+| Latency p50 / p95 | **5.7 s** / **7.3 s** |
+| Avg tokens per question | 2,777 |
+| Total cost (44 questions incl. judge) | **$0.39** (~$0.009 per question) |
+
+By category, keyword recall was 100% everywhere except drugs (80%) and DME (88%): one answer described
+creditable coverage without the expected phrasing, and one DME cost answer covered the 20% coinsurance but not the
+Part B deductible. One summarizer reply exceeded the 400-character quote limit and was **fixed automatically by the
+validate-and-retry loop**.
+
+Caveats: 44 questions is a small set; groundedness is judged by a Claude model (same family as the generator), and
+member questions use synthetic data. Treat these as regression baselines, not production accuracy claims.
+
 ## Production mapping (AWS)
 
 | Demo | Production |
