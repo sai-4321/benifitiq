@@ -255,3 +255,8 @@ a branch (`feature/BIQ-n-...`), small Conventional Commits, a pull request with 
 - No authentication on the API; reviewer names are self-reported (production: Cognito / SSO and audit logging).
 - Medicare.gov links always serve the newest edition; `data/raw/manifest.json` records which one an index was built from.
 - Plan values and members are invented for the demo and don't describe any real insurer.
+
+## License
+
+Code: [MIT](LICENSE). The Medicare.gov documents the app downloads are U.S. Government works in the public domain;
+they are not included in this repository.
