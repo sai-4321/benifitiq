@@ -48,7 +48,12 @@ with st.sidebar:
     if err:
         st.error(err)
     else:
-        st.success(f"API {health['status']}") if health["status"] == "ok" else st.warning("API degraded")
+        # A plain if/else, not `a if cond else b` on one line: Streamlit "magic" renders the value of any bare
+        # expression, so the one-liner dumped DeltaGenerator's help text into the sidebar.
+        if health["status"] == "ok":
+            st.success(f"API {health['status']}")
+        else:
+            st.warning("API degraded")
         st.caption(f"LLM: {health['provider']}  \nEmbeddings: {health['embedding_provider']}  \n"
                    f"Indexed chunks: {health['indexed_chunks']}  \nMember DB: {health['member_db']}  \n"
                    f"LangSmith: {health['langsmith_tracing']}")
