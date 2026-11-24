@@ -15,6 +15,7 @@ import re
 
 from langgraph.types import interrupt
 
+from app.agents.claims_intent import claims_query
 from app.agents.mcp_client import ToolCallError, run_member_lookup
 from app.agents.prompts import ROUTER_SYSTEM, SUMMARIZER_SYSTEM
 from app.agents.state import AgentState
@@ -64,6 +65,11 @@ def router_node(state: AgentState) -> dict:
     except Exception as exc:  # noqa: BLE001 - routing must never take the app down
         log.warning("Router LLM failed, using keyword heuristic: %s", exc)
         decision, usage, errors = heuristic_route(question, member_id), [], [f"router_fallback: {exc}"[:200]]
+    # A member's claims-history question ("Has [MEMBER_ID_1] had a mammogram?") reads like a policy question,
+    # but answering it needs the member lookup. Upgrade policy -> both so the lookup agent runs too.
+    if member_id and decision.intent == "policy" and claims_query(question)[0]:
+        reason = (decision.reason + " (+claims history)")[:300]
+        decision = decision.model_copy(update={"intent": "both", "reason": reason})
     log.info("Route -> %s (service=%s)", decision.intent, decision.service)
     return {"intent": decision.intent, "service": decision.service, "route_reason": decision.reason,
             "usage": usage, "errors": errors, "trace": ["router"]}
@@ -86,7 +92,11 @@ def lookup_node(state: AgentState) -> dict:
         return {"tool_results": None, "tool_error": "No member ID was provided. Ask the user for the member ID "
                 "(format M1234).", "trace": ["lookup"]}
     try:
-        results = run_member_lookup(member_id, state.get("service"))
+        wants_claims, claims_service, months = claims_query(state.get("question", ""))
+        claims_args = None
+        if wants_claims:
+            claims_args = {"months": months, **({"service": claims_service} if claims_service else {})}
+        results = run_member_lookup(member_id, state.get("service"), claims_args=claims_args)
         return {"tool_results": results, "tool_error": None, "trace": ["lookup"]}
     except ToolCallError as exc:
         log.warning("Lookup failed: %s", exc)
@@ -118,6 +128,16 @@ def _format_member_data(state: AgentState) -> str:
     }
     if results.get("prior_auth"):
         view["TOOL:check_prior_auth"] = results["prior_auth"]
+    claims = results.get("claims")
+    if claims is not None:
+        if claims.get("available"):
+            view["TOOL:get_claims_summary"] = {k: claims[k] for k in (
+                "source", "window", "service_filter", "claims_in_window", "matching_lines", "most_recent", "lines",
+                "truncated") if k in claims}
+        else:
+            view["TOOL:get_claims_summary"] = {"available": False, "note": (
+                "This member has not connected Medicare claims (Blue Button), so claims history is unavailable."
+                if claims.get("reason") == "not_connected" else "Medicare claims history is temporarily unavailable.")}
     return json.dumps(view, indent=2)
 
 
@@ -129,6 +149,8 @@ def validate_citations(answer: AnswerJSON, state: AgentState) -> tuple[AnswerJSO
         tool_ids = {"TOOL:get_member_plan", "TOOL:get_plan_benefits"}
         if state["tool_results"].get("prior_auth"):
             tool_ids.add("TOOL:check_prior_auth")
+        if (state["tool_results"].get("claims") or {}).get("available"):
+            tool_ids.add("TOOL:get_claims_summary")
     kept: list[Citation] = []
     dropped = 0
     for cit in answer.citations:

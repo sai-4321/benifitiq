@@ -48,7 +48,7 @@ def _parse_result(name: str, result) -> dict:
     raise ToolCallError(f"{name} returned no content")
 
 
-async def _lookup(member_id: str, service: str | None) -> dict:
+async def _lookup(member_id: str, service: str | None, claims_args: dict | None = None) -> dict:
     calls: list[dict] = []
     async with stdio_client(_server_params()) as (read, write):
         async with ClientSession(read, write) as session:
@@ -64,7 +64,18 @@ async def _lookup(member_id: str, service: str | None) -> dict:
             prior_auth = None
             if service:
                 prior_auth = await call("check_prior_auth", {"plan_id": member["plan_id"], "service": service})
-    return {"member": member, "benefits": benefits, "prior_auth": prior_auth, "tool_calls": calls}
+            claims = None
+            if claims_args is not None:
+                # Claims are optional context: a member who hasn't connected Blue Button (or a sandbox outage)
+                # must not fail the plan lookup. The reason is kept generic - no ids reach the prompt.
+                try:
+                    claims = await call("get_claims_summary", {"member_id": member_id, **claims_args})
+                    claims["available"] = True
+                except ToolCallError as exc:
+                    reason = "not_connected" if "has not connected" in str(exc) else "unavailable"
+                    claims = {"available": False, "reason": reason}
+                    calls.append({"tool": "get_claims_summary", "args": claims_args, "error": reason})
+    return {"member": member, "benefits": benefits, "prior_auth": prior_auth, "claims": claims, "tool_calls": calls}
 
 
 def _run_sync(coro):
@@ -78,10 +89,11 @@ def _run_sync(coro):
 
 
 @traceable(name="mcp_member_lookup", run_type="tool")
-def run_member_lookup(member_id: str, service: str | None = None, timeout: float = 30.0) -> dict:
-    """Sync entry point used by the LangGraph lookup node."""
+def run_member_lookup(member_id: str, service: str | None = None, timeout: float = 30.0,
+                      claims_args: dict | None = None) -> dict:
+    """Sync entry point used by the LangGraph lookup node. claims_args (service/months) adds Blue Button claims."""
     try:
-        return _run_sync(asyncio.wait_for(_lookup(member_id, service), timeout=timeout))
+        return _run_sync(asyncio.wait_for(_lookup(member_id, service, claims_args), timeout=timeout))
     except ToolCallError:
         raise
     except Exception as exc:  # noqa: BLE001

@@ -21,6 +21,7 @@ os.environ.update({
     "CHROMA_DIR": str(_TMP / "chroma"),
     "MEMBER_DB_PATH": str(_TMP / "members.db"),
     "CACHE_DIR": str(_TMP / "cache"),
+    "BLUEBUTTON_TOKEN_DIR": str(_TMP / "bluebutton"),   # never pick up a developer's real sandbox tokens
     "INJECTION_LLM_CHECK": "false",
     "HITL_CONFIDENCE_THRESHOLD": "0.6",
 })
