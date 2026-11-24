@@ -38,7 +38,7 @@ async def test_server_rejects_bad_input_schema(member_db):
 
 async def test_tool_list_has_typed_schemas(member_db):
     tools = {t.name: t for t in await server.mcp.list_tools()}
-    assert set(tools) == {"get_member_plan", "get_plan_benefits", "check_prior_auth"}
+    assert set(tools) == {"get_member_plan", "get_plan_benefits", "check_prior_auth", "get_claims_summary"}
     assert tools["get_member_plan"].inputSchema["properties"]["member_id"]["pattern"] == r"^M\d{4}$"
     assert "mri" in tools["check_prior_auth"].inputSchema["properties"]["service"]["enum"]
 
