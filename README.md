@@ -260,3 +260,11 @@ a branch (`feature/BIQ-n-...`), small Conventional Commits, a pull request with 
 
 Code: [MIT](LICENSE). The Medicare.gov documents the app downloads are U.S. Government works in the public domain;
 they are not included in this repository.
+
+## Run in GitHub Codespaces
+
+Code -> Codespaces -> **Create codespace on main**. The dev container (`.devcontainer/devcontainer.json`) uses
+**Python 3.12**, installs `requirements.txt` and creates `.env` from the example. Paste your Bedrock key into `.env`,
+then `python scripts/check_bedrock.py`. Ports 8000 (API) and 8501 (UI) are forwarded automatically.
+The default Codespaces image ships a newer Python (3.14) for which some pinned packages (e.g. pyarrow) have no
+prebuilt wheels yet - the dev container avoids that.
