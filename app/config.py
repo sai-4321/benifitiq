@@ -54,6 +54,15 @@ class Settings(BaseSettings):
     langsmith_project: str = "benefitiq"
     langsmith_endpoint: str = "https://api.smith.langchain.com"
 
+    # --- CMS Blue Button 2.0 (synthetic Medicare claims, sandbox) ---
+    bluebutton_base_url: str = "https://sandbox.bluebutton.cms.gov"
+    bluebutton_api_version: str = "v2"
+    bluebutton_client_id: str = ""
+    bluebutton_client_secret: SecretStr = SecretStr("")
+    bluebutton_redirect_uri: str = "http://localhost:8765/callback"
+    bluebutton_token_dir: str = "data/bluebutton"
+    bluebutton_timeout_seconds: int = Field(default=30, ge=5, le=120)
+
     # --- App behaviour ---
     chroma_dir: str = "data/chroma"
     member_db_path: str = "data/synthetic/members.db"
@@ -110,6 +119,10 @@ class Settings(BaseSettings):
     @property
     def cache_path(self) -> Path:
         return self.resolve(self.cache_dir)
+
+    @property
+    def bluebutton_token_path(self) -> Path:
+        return self.resolve(self.bluebutton_token_dir)
 
     @property
     def raw_docs_path(self) -> Path:
