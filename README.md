@@ -144,13 +144,14 @@ Production mapping: Amazon OpenSearch Serverless hybrid query, or Bedrock Knowle
 ## Member tools (MCP)
 
 Member and plan facts come from an **MCP server** (`app/mcp_server/server.py`), not from free-form SQL. It exposes
-three typed, read-only tools over the synthetic database:
+four typed, read-only tools:
 
 | Tool | Input (validated before running) | Returns |
 |---|---|---|
 | `get_member_plan` | `member_id` matching `^M\d{4}$` | plan ID/name/type, coverage start, status - no names, DOB or phone |
 | `get_plan_benefits` | `plan_id` matching `^PLN-\d{3}$` | deductible, copays, OOP max, coinsurance, referral rule |
 | `check_prior_auth` | `plan_id` + `service` from a fixed list | whether prior authorization is required, with notes |
+| `get_claims_summary` | `member_id`, optional `service` (e.g. "mammogram"), `months` 1-60 | recent Medicare claim lines from **CMS Blue Button 2.0** (synthetic sandbox): date, claim type, code, description - no amounts, NPIs or diagnoses. Needs the member to be connected: [docs/BLUE_BUTTON_SETUP.md](docs/BLUE_BUTTON_SETUP.md) |
 
 Try it in any MCP client (e.g. Claude Desktop `claude_desktop_config.json`):
 
