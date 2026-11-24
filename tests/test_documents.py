@@ -55,8 +55,9 @@ def test_sources_are_public_medicare_pdfs():
     assert len(SOURCES) == 4
     for doc in SOURCES:
         assert doc.url.startswith("https://www.medicare.gov/publications/")
-        assert doc.url.endswith(doc.filename) and doc.filename.endswith(".pdf")
+        assert doc.url.endswith(".pdf") and doc.filename.endswith(".pdf")
         assert doc.product_number.isdigit()
+        assert doc.url.split("/")[-1].startswith(doc.product_number)   # URL and local name refer to the same booklet
 
 
 def test_download_sends_user_agent_and_timeout(tmp_path):
